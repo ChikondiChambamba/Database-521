@@ -18,6 +18,26 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+// Initialize database tables
+async function initializeDatabase() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS contacts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+  } catch (err) {
+    console.error('Error initializing database:', err);
+  }
+}
+
+// Call the initialization function
+initializeDatabase();
+
 // Set EJS as the view engine and set views directory
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -257,7 +277,7 @@ app.get('/contact', (req, res) => {
 });
 
 // Process contact form submission
-app.post('/contact', (req, res) => {
+app.post('/contact', async (req, res) => {
   const { name, email, message } = req.body;
   
   if (!name || !email || !message) {
@@ -268,12 +288,29 @@ app.post('/contact', (req, res) => {
     });
   }
 
-  // Show success message
-  res.render('contact', {
-    title: 'Contact Us - Malawi Tourism Blog',
-    success: 'Thank you for your message! We will get back to you soon.'
-  });
+  try {
+    // Insert the contact form data
+    await pool.query(
+      'INSERT INTO contacts (name, email, message) VALUES (?, ?, ?)',
+      [name, email, message]
+    );
+
+    // Show success message
+    res.render('contact', {
+      title: 'Contact Us - Malawi Tourism Blog',
+      success: 'Thank you for your message! We will get back to you soon.'
+    });
+  } catch (err) {
+    console.error('Error saving contact:', err);
+    res.status(500).render('contact', {
+      title: 'Contact Us - Malawi Tourism Blog',
+      error: 'Sorry, there was an error saving your message. Please try again.',
+      formData: { name, email, message }
+    });
+  }
 });
+
+
 
 // Error handling for file uploads
 app.use((error, req, res, next) => {
