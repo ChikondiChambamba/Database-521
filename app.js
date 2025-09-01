@@ -9,9 +9,9 @@ const port = process.env.PORT || 3000;
 
 // Database connection pool
 const pool = mysql.createPool({
-  host: 'localhost',       // Change if your MySQL is remote
-  user: 'root',            // Your MySQL username
-  password: '123456', // Your MySQL password
+  host: 'localhost',       
+  user: 'root',            
+  password: '123456', 
   database: 'malawi_tourism',
   waitForConnections: true,
   connectionLimit: 10,
@@ -42,7 +42,7 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 10 * 1024 * 1024, // 5MB limit
   },
   fileFilter: function (req, file, cb) {
     // Accept images only
