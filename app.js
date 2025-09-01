@@ -4,14 +4,14 @@ const app = express();
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-const mysql = require('mysql2/promise'); // Use promise-based mysql2
+const mysql = require('mysql2/promise');
 const port = process.env.PORT || 3000;
 
 // Database connection pool
 const pool = mysql.createPool({
-  host: 'localhost',       // Change if your MySQL is remote
-  user: 'root',            // Your MySQL username
-  password: '123456', // Your MySQL password
+  host: 'localhost',       
+  user: 'root',            
+  password: 'root', 
   database: 'malawi_tourism',
   waitForConnections: true,
   connectionLimit: 10,
